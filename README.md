@@ -18,7 +18,7 @@ Execute when first request.
 
 ### Request "/post"
 Execute when want end of "Wait()".
-Using Argument "i" of "Done()" for send data to "Wait()".
+Using Argument "i" of "DoneAll()" for send data to "Wait()".
 
 ```
 	cmt.DoneAll(i)
@@ -35,5 +35,5 @@ Execute when want wait.
 Execute when exit.
 
 ```
-	cmt.Done(r, i)
+	cmt.End(r)
 ```
