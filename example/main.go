@@ -9,7 +9,6 @@ import (
 	"os"
 
 	"github.com/intelfike/comet"
-	"github.com/intelfike/shufflechat/io/input"
 	"github.com/intelfike/shufflechat/io/output"
 )
 
@@ -61,9 +60,7 @@ func init() {
 		}
 	})
 	http.HandleFunc("/exit", func(w http.ResponseWriter, r *http.Request) {
-		name, _ := input.ReadCookie(r, "name")
-		// 最後の待機を終了させる
-		cmt.Done(r, name+"が退室しました")
+		cmt.End(r)
 	})
 }
 func main() {

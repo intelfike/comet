@@ -2,7 +2,6 @@ package comet
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 
 	uuid "github.com/satori/go.uuid"
@@ -51,7 +50,6 @@ func (c *Comet) Done(r *http.Request, i interface{}) error {
 func (c *Comet) DoneAll(i interface{}) {
 	slist := c.sessionList.GetList()
 	for _, ch := range slist {
-		fmt.Println("send", ch, i)
 		ch <- i
 	}
 }
@@ -68,7 +66,16 @@ func (c *Comet) Wait(r *http.Request) (interface{}, error) {
 		return nil, errors.New("セッションのリストから見つかりませんでした")
 	}
 	i := <-ch
-	fmt.Println("done -", cdata.Value, i)
 
 	return i, nil
+}
+
+func (c *Comet) End(r *http.Request) error {
+	cdata, err := r.Cookie(c.key)
+	if err != nil {
+		return errors.New("セッションがセットされていません Start()を実行済みか確認してください。")
+	}
+
+	c.sessionList.Delete(cdata.Value)
+	return nil
 }

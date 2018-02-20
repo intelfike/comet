@@ -2,7 +2,6 @@ package comet
 
 import (
 	"errors"
-	"fmt"
 )
 
 // セッションのcookieのkey, UUID, データ送信用のチャンネル
@@ -20,9 +19,17 @@ func (sl *SessionList) Set(id string) error {
 	if ok { // あれば拒否
 		return errors.New(id + ":idは既にセットされています。")
 	}
-	fmt.Println("set", id)
 	sl.Map[id] = make(chan interface{}, 10)
 	return nil
+}
+
+func (sl *SessionList) Delete(id string) {
+	ch, ok := sl.Map[id]
+	if !ok { // 無ければ拒否
+		return
+	}
+	close(ch)
+	delete(sl.Map, id)
 }
 
 // リストを取得
