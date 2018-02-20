@@ -21,7 +21,7 @@ Execute when want end of "Wait()".
 Using Argument "i" of "Done()" for send data to "Wait()".
 
 ```
-	cmt.Done(i)
+	cmt.DoneAll(i)
 ```
 
 ### Request "/wait"
@@ -29,4 +29,11 @@ Execute when want wait.
 
 ```
 	i := cmt.Wait(r)
+```
+
+### Request "/exit"
+Execute when exit.
+
+```
+	cmt.Done(r, i)
 ```

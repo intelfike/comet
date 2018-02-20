@@ -1,6 +1,7 @@
 package comet
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -34,26 +35,40 @@ func (c *Comet) Start(w http.ResponseWriter, r *http.Request) error {
 	c.sessionList.Set(u1)
 	return nil
 }
-func (c *Comet) Done(i interface{}) {
+func (c *Comet) Done(r *http.Request, i interface{}) error {
+	cdata, err := r.Cookie(c.key)
+	if err != nil {
+		return errors.New("セッションがセットされていません Start()を実行済みか確認してください。")
+	}
+	slist := c.sessionList.GetList()
+	ch, ok := slist[cdata.Value]
+	if !ok {
+		return errors.New("セッションのリストから見つかりませんでした")
+	}
+	ch <- i
+	return nil
+}
+func (c *Comet) DoneAll(i interface{}) {
 	slist := c.sessionList.GetList()
 	for _, ch := range slist {
 		fmt.Println("send", ch, i)
 		ch <- i
 	}
 }
-func (c *Comet) Wait(r *http.Request) interface{} {
+
+func (c *Comet) Wait(r *http.Request) (interface{}, error) {
 	cdata, err := r.Cookie(c.key)
 	if err != nil {
-		return nil
+		return nil, errors.New("セッションがセットされていません Start()を実行済みか確認してください。")
 	}
 
 	slist := c.sessionList.GetList()
 	ch, ok := slist[cdata.Value]
 	if !ok {
-		return nil
+		return nil, errors.New("セッションのリストから見つかりませんでした")
 	}
 	i := <-ch
 	fmt.Println("done -", cdata.Value, i)
 
-	return i
+	return i, nil
 }
