@@ -18,9 +18,10 @@ Execute when first request.
 
 ### Request "/post"
 Execute when want end of "Wait()".
+Using Argument "i" of "Done()" for send data to "Wait()".
 
 ```
-	cmt.Done(htmlgen.ChatItem(name, text))
+	cmt.Done(i)
 ```
 
 ### Request "/wait"
