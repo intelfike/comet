@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>chat</title>
+
+<body>
+	<form name="chat" action="/post" method="post">
+		<input type="text" id="user_name" placeholder="ユーザー名" size="10"><br>
+		<input type="text" id="chat_text" placeholder="チャット">
+		<!-- <button id="submit">送信</button> -->
+		<input type="submit" id="submit_btn" value="送信">
+	</form>
+
+	<div id="chat_history"></div>
+</body>
+
+<script>
+// cometを開始
+window.onload = comet
+
+// cometでチャットを受信する
+async function comet(){
+	while(true){
+		let html = await Ajax("GET", "/comet", null)
+		chat_history.innerHTML += html
+		await Sleep(1000)
+	}
+}
+// 退室する
+window.onbeforeunload = async () => {
+	await Ajax('POST', '/exit' , null)
+}
+
+// チャットを送信する
+submit_btn.onclick = async (e) => {
+	e.preventDefault()
+
+	var chat = '<div id="chat">' + user_name.value + '|' + chat_text.value + '</div>'
+	await Ajax('POST', '/post', chat)
+	chat_text.value = ''
+}
+
+// よく使うやつ
+function Ajax(method, action, data){
+	return new Promise(ok => {
+		var aj = new XMLHttpRequest()
+		aj.open(method, action)
+		aj.onload = ()=>{
+			 ok(aj.responseText)
+		}
+		aj.send(data)
+	})
+}
+function Sleep(time) {
+	return new Promise(ok => {
+		setTimeout(ok, time)
+	})
+}
+</script>
