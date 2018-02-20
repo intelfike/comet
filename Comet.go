@@ -34,6 +34,8 @@ func (c *Comet) Start(w http.ResponseWriter, r *http.Request) error {
 	c.sessionList.Set(u1)
 	return nil
 }
+
+// done me
 func (c *Comet) Done(r *http.Request, i interface{}) error {
 	cdata, err := r.Cookie(c.key)
 	if err != nil {
@@ -47,11 +49,30 @@ func (c *Comet) Done(r *http.Request, i interface{}) error {
 	ch <- i
 	return nil
 }
+
+// done all
 func (c *Comet) DoneAll(i interface{}) {
 	slist := c.sessionList.GetList()
 	for _, ch := range slist {
 		ch <- i
 	}
+}
+
+// done other
+// 自分以外を終了
+func (c *Comet) DoneOther(r *http.Request, i interface{}) error {
+	cdata, err := r.Cookie(c.key)
+	if err != nil {
+		return errors.New("セッションがセットされていません Start()を実行済みか確認してください。")
+	}
+	slist := c.sessionList.GetList()
+	for key, ch := range slist {
+		if cdata.Value == key {
+			continue
+		}
+		ch <- i
+	}
+	return nil
 }
 
 func (c *Comet) Wait(r *http.Request) (interface{}, error) {

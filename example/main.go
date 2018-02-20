@@ -44,7 +44,7 @@ func init() {
 		}
 
 		// 全てのチャンネルに通知
-		cmt.DoneAll(string(b))
+		cmt.DoneOther(r, string(b))
 	})
 	http.HandleFunc("/comet", func(w http.ResponseWriter, r *http.Request) {
 		// 待機
